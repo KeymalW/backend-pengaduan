@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Kategori;
+use Illuminate\Http\Request;
+
+class KategoriController extends Controller
+{
+    public function index()
+    {
+        return response()->json(Kategori::all());
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'ket_kategori' => 'required|string|max:30',
+        ]);
+
+        $kategori = Kategori::create($request->all());
+
+        return response()->json([
+            'message' => 'Kategori berhasil ditambahkan',
+            'data' => $kategori
+        ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'ket_kategori' => 'required|string|max:30',
+        ]);
+
+        $kategori = Kategori::findOrFail($id);
+        $kategori->update($request->all());
+
+        return response()->json([
+            'message' => 'Kategori berhasil diupdate',
+            'data' => $kategori
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        Kategori::destroy($id);
+        return response()->json([
+            'message' => 'Kategori berhasil dihapus'
+        ]);
+    }
+}
