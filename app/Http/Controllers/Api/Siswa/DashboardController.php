@@ -21,8 +21,13 @@ class DashboardController extends Controller
             'menunggu' => (clone $query)->where('status', 'Menunggu')->count(),
             'proses' => (clone $query)->where('status', 'Proses')->count(),
             'selesai' => (clone $query)->where('status', 'Selesai')->count(),
+            'unread_notifications' => $user->unreadNotifications()->count(),
         ];
 
-        return response()->json($stats);
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
     }
 }
+
