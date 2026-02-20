@@ -4,24 +4,31 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Aspirasi;
+use App\Models\Siswa;
+use App\Models\InputAspirasi;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function stats(Request $request)
+    public function stats()
     {
-        // Admin sees everything
-        $query = Aspirasi::query();
-
-        // Optional: Add filters for stats if needed in the future
-        
         $stats = [
-            'total' => (clone $query)->count(),
-            'menunggu' => (clone $query)->where('status', 'Menunggu')->count(),
-            'proses' => (clone $query)->where('status', 'Proses')->count(),
-            'selesai' => (clone $query)->where('status', 'Selesai')->count(),
+            'total_aspirasi' => Aspirasi::count(),
+            'total_siswa' => Siswa::count(),
+            'status_counts' => [
+                'menunggu' => Aspirasi::where('status', 'Menunggu')->count(),
+                'proses' => Aspirasi::where('status', 'Proses')->count(),
+                'selesai' => Aspirasi::where('status', 'Selesai')->count(),
+            ],
+            'terbaru' => InputAspirasi::with(['siswa', 'kategori', 'aspirasi'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
         ];
 
-        return response()->json($stats);
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
     }
 }
