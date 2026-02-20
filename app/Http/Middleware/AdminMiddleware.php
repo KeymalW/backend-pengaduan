@@ -15,14 +15,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated and has admin privileges
-        // We check if the token has the 'role:admin' ability which defines an Admin
-        if (! $request->user() || ! $request->user()->tokenCan('role:admin')) {
-            return response()->json([
-                'message' => 'Unauthorized. Admin access required.'
-            ], 403);
+        if ($request->user() && $request->user()->tokenCan('role:admin')) {
+            return $next($request);
         }
 
-        return $next($request);
+        return response()->json([
+            'success' => false,
+            'message' => 'Akses ditolak. Hanya Admin yang diperbolehkan.'
+        ], 403);
     }
 }
